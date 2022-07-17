@@ -18,12 +18,53 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      
+      new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
+        name: "JATE",
+        short_name: "JATE",
+        description: "Just another Text Editor",
+        background_color: "#272822",
+        theme_color: "#272822",
+        start_url: "/",
+        publicPath: "/",
+        crossorigin: "use-credentials",
+        display: "standalone",
+        icons: [
+          {
+            src: path.resolve("src/images/logo.png"),
+            sizes: [96, 128, 192, 384, 512],
+            destination: path.join("assets", "icons"),
+          },
+        ],
+      }),
+      new HtmlWebpackPlugin({
+        template: "./index.html",
+        title: "JATE",
+      }),
+      new InjectManifest({
+        swSrc: "./src-sw.js",
+        swDest: "src-sw.js",
+      }),
     ],
 
     module: {
       rules: [
-        
+        { test: /\.css$/i, use: ["style-loader", "css-loader"] },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env"],
+              plugins: [
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/transform-runtime",
+              ],
+            },
+          },
+        },
       ],
     },
   };
